@@ -1,6 +1,6 @@
 [package]
-name = "rust-project"
-version = "0.1.0"
+name = "ast-cli"
+version = "0.0.1"
 authors = ["Joseph Sawaya <josephsawaya938@gmail.com>"]
 edition = "2018"
 

@@ -1,3 +1,7 @@
 target/
 bruh/
 .DS_Store
+builds
+dist
+node_modules
+osxcross
