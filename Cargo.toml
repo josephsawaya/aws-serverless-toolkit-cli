@@ -3,7 +3,6 @@ name = "rust-project"
 version = "0.1.0"
 authors = ["Joseph Sawaya <josephsawaya938@gmail.com>"]
 edition = "2018"
-recursion_limit="256"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -12,5 +11,6 @@ recursion_limit="256"
 dialoguer="0.6.2"
 indicatif="0.15.0"
 console="0.12.0"
-cmd_lib = "0.8.3"
+
+
 
