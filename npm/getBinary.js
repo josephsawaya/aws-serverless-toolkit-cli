@@ -15,7 +15,7 @@ function getPlatform() {
 function getBinary() {
   const platform = getPlatform();
   const version = require("../package.json").version;
-  const url = `https://github.com/josephsawaya/aws-serverless-toolkit-cli/releases/download/v${version}/ast-cli-${platform}.tar.gz`;
+  const url = `https://github.com/josephsawaya/aws-serverless-toolkit-cli/releases/download/0.0.1/ast-cli-${platform}.tar.gz`;
   const name = "ast-cli";
   return new Binary(url, { name });
 }
