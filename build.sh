@@ -2,16 +2,16 @@ rm -rf dist
 rm -rf builds
 mkdir dist
 mkdir builds
-echo "Building target for platform linux"
+echo "Building target for platform windows"
 
-cargo build --release --target=x86_64-unknown-linux-gnu
+cargo build --release --target x86_64-pc-windows-gnu
 mkdir builds/ast-cli-win64
 cp target/x86_64-pc-windows-gnu/release/ast-cli.exe builds/ast-cli-win64
 tar -C builds -czvf dist/ast-cli-win64.tar.gz ast-cli-win64
 
-echo "Building target for platform windows"
+echo "Building target for platform linux"
 
-cargo build --release --target x86_64-pc-windows-gnu
+cargo build --release --target x86_64-unknown-linux-gnu
 mkdir builds/ast-cli-linux
 cp target/x86_64-unknown-linux-gnu/release/ast-cli builds/ast-cli-linux
 tar -C builds -czvf dist/ast-cli-linux.tar.gz ast-cli-linux
