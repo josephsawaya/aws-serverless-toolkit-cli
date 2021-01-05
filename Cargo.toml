@@ -10,7 +10,6 @@ edition = "2018"
 [dependencies]
 dialoguer="0.6.2"
 indicatif="0.15.0"
-console="0.12.0"
-
-
+colored = "2.0.0"
+yaml-rust = "0.4.5"
 

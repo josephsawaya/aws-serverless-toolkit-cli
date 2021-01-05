@@ -1,4 +1,5 @@
 pub fn new() {
+    use colored::*;
     use std::process::Command;
     let name = dialoguer::Input::<String>::new()
         .with_prompt("Your Project Name")
@@ -8,66 +9,60 @@ pub fn new() {
     path_name.push_str(&name);
     const LINK: &str = "https://github.com/josephsawaya/aws-serverless-toolkit-template.git";
     if cfg!(windows) {
-        let mut clone = String::from("git clone ");
-        clone.push_str(&LINK);
-        clone.push_str(" ");
-        clone.push_str(&path_name);
+        let mut cmd = format!(
+            "git clone {} {} & RMDIR .\\{}\\git /S",
+            &LINK, &path_name, &path_name
+        );
+        let mut errmessage = format!(
+            "{} {}",
+            "error:".bright_red().bold(),
+            "failed to clone or remove git from created folderr"
+        );
         let mut child = Command::new("cmd")
-            .args(&["/C", &clone[..]])
+            .args(&["/C", &cmd])
             .spawn()
-            .expect("failed to execute process");
-        child.wait().expect("failed to execute process");
-
-        let mut cd = String::from("cd ");
-        cd.push_str(&path_name);
-        child = Command::new("cmd")
-            .args(&["/C", &cd[..]])
-            .spawn()
-            .expect("failed to execute process");
-        child.wait().expect("failed to execute process");
-
+            .expect(&errmessage[..]);
+        child.wait().expect(&errmessage[..]);
         std::env::set_current_dir(&path_name).expect("failed to execute process");
+        cmd = format!("git init & mkdir .ast_config");
+        errmessage = format!(
+            "{} {}",
+            "error:".bright_red().bold(),
+            "failed to init git repo or create ast_config folder"
+        );
         child = Command::new("cmd")
-            .args(&["/C", "RMDIR .\\git /S"])
+            .args(&["/C", &cmd])
             .spawn()
-            .expect("failed to execute process");
-        child.wait().expect("failed to execute process");
-        child = Command::new("cmd")
-            .args(&["/C", "git init"])
-            .spawn()
-            .expect("failed to execute process");
-        child.wait().expect("failed to execute process");
+            .expect(&errmessage[..]);
+        child.wait().expect(&errmessage[..]);
     } else {
-        let mut clone = String::from("git clone ");
-        clone.push_str(&LINK);
-        clone.push_str(" ");
-        clone.push_str(&path_name);
+        let mut cmd = format!(
+            "git clone {} {} ; rm -rf ./{}/.git",
+            &LINK, &path_name, &path_name
+        );
+        let mut errmessage = format!(
+            "{} {}",
+            "error:".bright_red().bold(),
+            "failed to clone or remove git from created folderr"
+        );
         let mut child = Command::new("sh")
             .arg("-c")
-            .arg(clone)
+            .arg(cmd)
             .spawn()
-            .expect("failed to execute process");
-        child.wait().expect("failed to execute process");
-        let mut cd = String::from("cd ");
-        cd.push_str(&path_name);
+            .expect(&errmessage[..]);
+        child.wait().expect(&errmessage[..]);
         std::env::set_current_dir(&path_name).expect("failed to execute process");
+        cmd = format!("git init ; mkdir .ast_config");
+        errmessage = format!(
+            "{} {}",
+            "error:".bright_red().bold(),
+            "failed to init git repo or create ast_config folder"
+        );
         child = Command::new("sh")
             .arg("-c")
-            .arg("rm -rf ./.git")
+            .arg(cmd)
             .spawn()
-            .expect("failed to execute process");
-        child.wait().expect("failed to execute process");
-        child = Command::new("sh")
-            .arg("-c")
-            .arg("git init")
-            .spawn()
-            .expect("failed to execute process");
-        child.wait().expect("failed to execute process");
-        child = Command::new("sh")
-            .arg("-c")
-            .arg("mkdir .ast_config")
-            .spawn()
-            .expect("failed to execute process");
-        child.wait().expect("failed to execute process");
+            .expect(&errmessage[..]);
+        child.wait().expect(&errmessage[..]);
     };
 }
