@@ -5,7 +5,7 @@ pub fn add(added: Option<String>) {
   use std::io::prelude::*;
   use yaml_rust::YamlLoader;
   crate::helper::check_project_integrity();
-  let mut file_contents = match crate::helper::fetch_or_create_ast_config() {
+  let mut file_contents = match crate::helper::fetch_ast_config() {
     Ok(ast_config_contents) => ast_config_contents,
     Err(_) => {
       std::fs::write("./ast.yaml", "Config:\n").expect("trouble writing to config file");
@@ -15,7 +15,6 @@ pub fn add(added: Option<String>) {
   let mut file = File::open("./ast.yaml").unwrap();
   let mut contents = String::new();
   file.read_to_string(&mut contents).unwrap();
-  println!("{:?}", contents);
   let config = YamlLoader::load_from_str(&mut contents).unwrap();
   match added.as_deref() {
     Some("table") => {
@@ -116,8 +115,77 @@ pub fn add(added: Option<String>) {
         "\rChanges written to ast.yaml\n".bright_green().bold()
       );
     }
-    Some("lambda") => {}
-    Some("api") => file_contents.push_str("api:\n"),
+    Some("lambda") => {
+      let mut new_function = types::Lambda::new();
+      new_function.set_function_name(
+        dialoguer::Input::new()
+          .with_prompt("Function Name")
+          .allow_empty(false)
+          .interact()
+          .unwrap(),
+        &config[0],
+      );
+      let method_options = vec!["GET", "POST"];
+      new_function.set_method(
+        dialoguer::Select::new()
+          .with_prompt("What method should this function have")
+          .default(0)
+          .items(&method_options)
+          .interact()
+          .unwrap(),
+      );
+      new_function.set_path(
+        dialoguer::Input::new()
+          .with_prompt("Path Name")
+          .allow_empty(false)
+          .interact()
+          .unwrap(),
+        &config[0],
+      );
+      let table_names = crate::helper::fetch_names_from_config(&config[0], String::from("Table"));
+      let temp = dialoguer::MultiSelect::new()
+        .with_prompt("Tables this function will have read/write privileges to")
+        .items(&table_names)
+        .interact()
+        .unwrap();
+      new_function.set_table_list(temp, &config[0]);
+      file_contents = format!("{}{}", file_contents, new_function.create_string());
+      print!("{}", "Writing...".bright_green().bold());
+      std::fs::write("./ast.yaml", file_contents).expect("Trouble writing to config file");
+      print!(
+        "{}",
+        "\rChanges written to ast.yaml\n".bright_green().bold()
+      );
+      ()
+    }
+    Some("api") => {
+      let mut new_api = types::Api::new();
+      new_api.set_api_name(
+        dialoguer::Input::new()
+          .with_prompt("Api Name")
+          .allow_empty(false)
+          .interact()
+          .unwrap(),
+        &config[0],
+      );
+      let function_names =
+        crate::helper::fetch_names_from_config(&config[0], String::from("Function"));
+      new_api.set_function_list(
+        dialoguer::MultiSelect::new()
+          .with_prompt("Functions that will be a part of this API")
+          .items(&function_names)
+          .interact()
+          .unwrap(),
+        &config[0],
+      );
+      file_contents = format!("{}{}", file_contents, new_api.create_string());
+      print!("{}", "Writing...".bright_green().bold());
+      std::fs::write("./ast.yaml", file_contents).expect("Trouble writing to config file");
+      print!(
+        "{}",
+        "\rChanges written to ast.yaml\n".bright_green().bold()
+      );
+    }
     Some(_) => print!(
       "{} {} {} {}",
       "error:".bright_red().bold(),
