@@ -7,3 +7,5 @@
 `ast-cli new`
 
 Then enter the directory/project name you'd like and that's it!
+
+test
